@@ -6,45 +6,39 @@ use standard_xml\admin\controllers\file_interface;
 
 class fileXml implements file_interface
 {
-    protected $xml;
+    protected $dom;
 
-    public function load(string $path)
+    /**
+     * Evento construtor da classe
+     *
+     * @param string $path
+     */
+    public function __construct(string $path = null)
     {
-        return;
+        $this->load($path);
     }
 
     /**
-     * Retorna o nó
+     * Lê o arquivo com o DOMDocument
      *
-     * @param string $node
+     * @param string $path
      * @return void
      */
-    public function get(string $node)
+    public function load(string $path = null)
     {
-        return;
-    }
+        if(!isset($path)){
+            return;
+        }
 
-    /**
-     * Adiciona item ao nó
-     *
-     * @param string $node
-     * @param mixed $item
-     * @return void
-     */
-    public function set(string $node, $item)
-    {
-        return;
-    }
+        $this->setDom(new \DOMDocument('1.0', 'utf8'));
 
-    /**
-     * Informa se xml é válido conforme o schema
-     *
-     * @param object $xsd
-     * @return boolean
-     */
-    static public function isValid(object $xsd)
-    {
-        return;
+        try{
+            $this->getDom()->load($path);
+            return;
+        }
+        catch(\Exception $e){
+            throw \Exception($e->getMessage());
+        }
     }
 
     /**
@@ -55,26 +49,75 @@ class fileXml implements file_interface
      */
     public function content()
     {
+        return $this->getDom();
+    }
+
+    /**
+     * Retorna o nó
+     *
+     * @param string $tag
+     * @return void
+     */
+    public function get(string $tag)
+    {
+        return $this->getDom()->getElementsByTagName($tag);
+    }
+
+    /**
+     * Adiciona item ao nó
+     *
+     * @param string $tag
+     * @param mixed $item
+     * @return void
+     */
+    public function set(string $tag, $item)
+    {
         return;
     }
 
     /**
-     * Get the value of xml
-     */ 
-    public function getXml()
+     * Informa se xml é válido conforme o Schema (xsd)
+     *
+     * @param object $xsd
+     * @return boolean
+     */
+    public function isValidSchema(string $xsd)
     {
-        return $this->xml;
+        if(!file_exists($xsd)){
+            return false;
+        }
+
+        return $this->getDom()->schemaValidate($xsd);
     }
 
     /**
-     * Set the value of xml
+     * Informa se xml é válido conforme o DTD
+     *
+     * @param object $xsd
+     * @return boolean
+     */
+    public function isValidDtd()
+    {
+        return $this->getDom()->validate();
+    }
+
+    /**
+     * Get the value of dom
+     */ 
+    private function getDom()
+    {
+        return $this->dom;
+    }
+
+    /**
+     * Set the value of dom
      *
      * @return  self
      */ 
-    public function setXml($xml)
+    protected function setDom($dom)
     {
-        if(isset($xml)){
-            $this->xml = $xml;
+        if(isset($dom)){
+            $this->dom = $dom;
         }
 
         return $this;

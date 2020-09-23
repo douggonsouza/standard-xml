@@ -6,7 +6,9 @@ use standard_xml\admin\controllers\fileXml;
 
 abstract class standard
 {
-    static $fileXml;
+    protected static $fileXml;
+    protected static $mime;
+    protected static $read;
     
     /**
      * Lê o arquivo através da classe para o tipo
@@ -17,17 +19,30 @@ abstract class standard
     static public function read(string $path)
     {
         if(!file_exists($path)){
+            self::setRead(false);
             return false;
         }
 
-        $mine = mime_content_type($path);
-        // switch($mime){
-        //     case '':
-        //         self->setFileXml(new filePath($path));
-        //     break;
-        //     default:
-        // }
-        return;
+        // Mime
+        self::setMime(mime_content_type($path));
+    
+        // Lê file
+        switch(self::getMime()){
+            case "text/xml": self::setFileXml(new fileXml($path)); self::setRead(true); break;
+            default: self::setRead(false);
+        }
+
+        return true;
+    }
+
+    /**
+     * O arquivo foi lido ou não
+     *
+     * @return boolean
+     */
+    static public function isRead()
+    {
+        return self::getRead();
     }
 
     /**
@@ -46,18 +61,58 @@ abstract class standard
      */ 
     static public function getFileXml()
     {
-        return self->$fileXml;
+        return self::$fileXml;
     }
 
     /**
      * Set the value of fileXml
      *
-     * @return  self
+     * @return  this
      */ 
     static public function setFileXml($fileXml)
     {
         if(isset($fileXml)){
-            self->$fileXml = $fileXml;
+            self::$fileXml = $fileXml;
+        }
+    }
+
+    /**
+     * Get the value of mime
+     */ 
+    static public function getMime()
+    {
+        return self::$mime;
+    }
+
+    /**
+     * Set the value of mime
+     *
+     * @return  self
+     */ 
+    static public function setMime($mime)
+    {
+        if(isset($mime)){
+            self::$mime = $mime;
+        }
+    }
+
+    /**
+     * Get the value of read
+     */ 
+    static public function getRead()
+    {
+        return self::$read;
+    }
+
+    /**
+     * Set the value of read
+     *
+     * @return  self
+     */ 
+    public function setRead($read)
+    {
+        if(isset($read)){
+            self::$read = $read;
         }
     }
 }
