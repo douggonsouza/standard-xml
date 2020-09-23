@@ -1,0 +1,19 @@
+{
+    "name": "douggonsouza/standard-xml",
+    "description": "Leitor padronizado de xml",
+    "type": "library",
+    "license": "BSL-1.0 License",
+    "authors": [
+        {
+            "name": "Douglas Gonçalves de Souza",
+            "email": "douggonsouza@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "standard-xml\\": "src/"
+        }
+    }
+}
