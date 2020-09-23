@@ -13,7 +13,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "standard-xml\\": "src/"
+            "standard_xml\\": "src/"
         }
     }
 }

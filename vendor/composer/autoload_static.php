@@ -9,15 +9,21 @@ class ComposerStaticInitcd6a894c2bbbed9ba5ef80817affaea1
     public static $prefixLengthsPsr4 = array (
         's' => 
         array (
-            'standard-xml\\' => 13,
+            'standard_xml\\' => 13,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'standard-xml\\' => 
+        'standard_xml\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
+    );
+
+    public static $classMap = array (
+        'standard_xml\\admin\\controllers\\fileXml' => __DIR__ . '/../..' . '/src/admin/controllers/fileXml.php',
+        'standard_xml\\admin\\controllers\\file_interface' => __DIR__ . '/../..' . '/src/admin/controllers/file_interface.php',
+        'standard_xml\\admin\\controllers\\standard' => __DIR__ . '/../..' . '/src/admin/controllers/standard.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -25,6 +31,7 @@ class ComposerStaticInitcd6a894c2bbbed9ba5ef80817affaea1
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitcd6a894c2bbbed9ba5ef80817affaea1::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitcd6a894c2bbbed9ba5ef80817affaea1::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitcd6a894c2bbbed9ba5ef80817affaea1::$classMap;
 
         }, null, ClassLoader::class);
     }

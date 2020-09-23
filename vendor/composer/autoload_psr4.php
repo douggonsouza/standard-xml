@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'standard-xml\\' => array($baseDir . '/src'),
+    'standard_xml\\' => array($baseDir . '/src'),
 );
