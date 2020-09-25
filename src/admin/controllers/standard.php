@@ -46,6 +46,18 @@ abstract class standard
     }
 
     /**
+     * Transforma array de configs em xml
+     *
+     * @param array       $configs
+     * @param string|null $xsd
+     * @return string
+     */
+    static public function parseXml(array $configs, string $xsd = null)
+    {
+        return string;
+    }
+
+    /**
      * Devolve o conteúdo do arquivo
      * [interface]
      *

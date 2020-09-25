@@ -42,6 +42,22 @@ class fileXml implements file_interface
     }
 
     /**
+     * Inicia um conteúdo XML com ou sem DTD
+     *
+     * @param string $dtd
+     * @return void
+     */
+    public function initXML()
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+
+        $this->setDom(new DOMDocument("1.0", "utf-8"));
+        $this->getDom()->loadXML($xml);
+
+        return true;
+    }
+
+    /**
      * Devolve o conteúdo do arquivo
      * [interface]
      *
@@ -49,30 +65,94 @@ class fileXml implements file_interface
      */
     public function content()
     {
-        return $this->getDom();
+        return $this->save();
     }
 
     /**
      * Retorna o nó
+     * 
      *
      * @param string $tag
      * @return void
      */
-    public function get(string $tag)
+    public function getElement(string $tag)
     {
         return $this->getDom()->getElementsByTagName($tag);
     }
 
     /**
-     * Adiciona item ao nó
+     * Adiciona um elemento
      *
-     * @param string $tag
-     * @param mixed $item
-     * @return void
+     * @param string      $name
+     * @param string      $value
+     * @param mixed       $fatherElement
+     * @param array|null  $attributes
+     * @return bool
      */
-    public function set(string $tag, $item)
+    public function addElement(string $name, string $value, $fatherElement = null, array $attributes = null)
     {
-        return;
+        if(!isset($name) || empty($name)){
+            return false;
+        }
+
+        if(!isset($value) || empty($value)){
+            return false;
+        }
+
+        $dElement = $this->getDom()->createElement($name, $value);
+        if(isset($attributes) && !empty($attribues)){
+            $dElement = $this->addElementWithAttributes($name, $value, $attributes);
+        }
+
+        $add = $dElement;
+        if(isset($fatherElement)){
+            $add = $fatherElement->appendChild($dElement);
+        }
+
+        return $this->getDom()->appendChild($add);
+    }
+
+    /**
+     * Adiciona um elemento com attributo
+     *
+     * @param string $element
+     * @param mixed  $value
+     * @param array  $attributes
+     * @return object
+     */
+    public function addElementWithAttributes(string $element, $value, array $attributes)
+    {
+        if(!isset($element) || empty($element)){
+            return false;
+        }
+
+        if(!isset($value) || empty($value)){
+            return false;
+        }
+
+        if(!isset($attributes) || empty($attributes)){
+            return false;
+        }
+
+        $dElement   = $this->getDom()->createElement($element, $value);
+
+        foreach($attributes as $attribute => $value){
+            $dAttribute = $this->getDom()->createAttribute($attribute);
+            $dAttribute->value = $value;
+            $add = $dElement->appendChild($dAttribute);
+        }
+
+        return $add;
+    }
+
+    /**
+     * Salva o XML e suas alterações
+     *
+     * @return string
+     */
+    public function save()
+    {
+        return $this->getDom()->saveXML();
     }
 
     /**
