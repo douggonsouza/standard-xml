@@ -6,10 +6,12 @@ use standard_xml\admin\controllers\fileXml;
 
 abstract class standard
 {
-    protected static $fileXml;
+    protected static $file;
     protected static $mime;
     protected static $read;
-    
+
+    const MIME_XML = "text/xml";
+   
     /**
      * Lê o arquivo através da classe para o tipo
      *
@@ -22,13 +24,39 @@ abstract class standard
             self::setRead(false);
             return false;
         }
-
-        // Mime
-        self::setMime(mime_content_type($path));
     
         // Lê file
         switch(self::getMime()){
-            case "text/xml": self::setFileXml(new fileXml($path)); self::setRead(true); break;
+            case self::MIME_XML:
+                self::setFile(new fileXml($path));
+                // Mime
+                self::setMime(self::MIME_XML);
+                // isRead
+                self::setRead(true);
+            break;
+            default: self::setRead(false);
+        }
+
+        return true;
+    }
+
+    /**
+     * Inicia o arquivo pelo seu mime
+     *
+     * @param string $mime
+     * @return void
+     */
+    static public function load(string $mime)
+    {
+        // Lê file
+        switch($mime){
+            case self::MIME_XML:
+                self::setFile(new fileXml($path));
+                // Mime
+                self::setMime(self::MIME_XML);
+                // isRead
+                self::setRead(true);
+            break;
             default: self::setRead(false);
         }
 
@@ -65,15 +93,15 @@ abstract class standard
      */
     static public function content()
     {
-        return;
+        return self::$file->content();
     }
 
     /**
      * Get the value of fileXml
      */ 
-    static public function getFileXml()
+    static public function getFile()
     {
-        return self::$fileXml;
+        return self::$file;
     }
 
     /**
@@ -81,10 +109,10 @@ abstract class standard
      *
      * @return  this
      */ 
-    static public function setFileXml($fileXml)
+    static public function setFile($file)
     {
-        if(isset($fileXml)){
-            self::$fileXml = $fileXml;
+        if(isset($file)){
+            self::$file = $file;
         }
     }
 

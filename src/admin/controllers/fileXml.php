@@ -15,7 +15,7 @@ class fileXml implements file_interface
      */
     public function __construct(string $path = null)
     {
-        $this->load($path);
+        $this->load($path = null);
     }
 
     /**
@@ -26,11 +26,11 @@ class fileXml implements file_interface
      */
     public function load(string $path = null)
     {
+        $this->setDom(new \DOMDocument('1.0', 'utf8'));
+
         if(!isset($path)){
             return;
         }
-
-        $this->setDom(new \DOMDocument('1.0', 'utf8'));
 
         try{
             $this->getDom()->load($path);
@@ -42,19 +42,16 @@ class fileXml implements file_interface
     }
 
     /**
-     * Inicia um conteúdo XML com ou sem DTD
+     * Inicia um conteúdo XML
      *
-     * @param string $dtd
-     * @return void
+     * @return string
      */
-    public function initXML()
+    public function start()
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-
-        $this->setDom(new DOMDocument("1.0", "utf-8"));
         $this->getDom()->loadXML($xml);
 
-        return true;
+        return $this->save();
     }
 
     /**
@@ -77,36 +74,38 @@ class fileXml implements file_interface
      */
     public function getElement(string $tag)
     {
-        return $this->getDom()->getElementsByTagName($tag);
+        $element = $this->getDom()->getElementsByTagName($tag);
+        if($element->length == 0){
+            return null;
+        }
+
+        return $element;
     }
 
     /**
      * Adiciona um elemento
      *
      * @param string      $name
-     * @param string      $value
-     * @param mixed       $fatherElement
+     * @param mixed|null  $value
      * @param array|null  $attributes
+     * @param object|null $fatherElement
      * @return bool
      */
-    public function addElement(string $name, string $value, $fatherElement = null, array $attributes = null)
+    public function addElement(string $name, $value = null, array $attributes = null, object $fatherElement = null)
     {
         if(!isset($name) || empty($name)){
             return false;
         }
 
-        if(!isset($value) || empty($value)){
-            return false;
-        }
-
         $dElement = $this->getDom()->createElement($name, $value);
-        if(isset($attributes) && !empty($attribues)){
-            $dElement = $this->addElementWithAttributes($name, $value, $attributes);
+        if(isset($attributes) && !empty($attributes)){
+            $dElement = $this->addElementWithAttributes($name, $attributes, $value);
         }
 
         $add = $dElement;
         if(isset($fatherElement)){
-            $add = $fatherElement->appendChild($dElement);
+            $fatherElement->appendChild($dElement);
+            $add = $fatherElement;
         }
 
         return $this->getDom()->appendChild($add);
@@ -116,17 +115,13 @@ class fileXml implements file_interface
      * Adiciona um elemento com attributo
      *
      * @param string $element
-     * @param mixed  $value
      * @param array  $attributes
+     * @param mixed  $value
      * @return object
      */
-    public function addElementWithAttributes(string $element, $value, array $attributes)
+    public function addElementWithAttributes(string $element, array $attributes, $value = null)
     {
         if(!isset($element) || empty($element)){
-            return false;
-        }
-
-        if(!isset($value) || empty($value)){
             return false;
         }
 
@@ -135,14 +130,13 @@ class fileXml implements file_interface
         }
 
         $dElement   = $this->getDom()->createElement($element, $value);
-
         foreach($attributes as $attribute => $value){
             $dAttribute = $this->getDom()->createAttribute($attribute);
             $dAttribute->value = $value;
-            $add = $dElement->appendChild($dAttribute);
+            $dElement->appendChild($dAttribute);
         }
 
-        return $add;
+        return $dElement;
     }
 
     /**
@@ -168,17 +162,6 @@ class fileXml implements file_interface
         }
 
         return $this->getDom()->schemaValidate($xsd);
-    }
-
-    /**
-     * Informa se xml é válido conforme o DTD
-     *
-     * @param object $xsd
-     * @return boolean
-     */
-    public function isValidDtd()
-    {
-        return $this->getDom()->validate();
     }
 
     /**
